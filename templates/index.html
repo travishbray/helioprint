@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HELIOPRINT — Cosmic Chronobiology</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: #080810;
+    color: #e0e0f0;
+    font-family: 'Georgia', serif;
+    min-height: 100vh;
+  }
+
+  header {
+    background: linear-gradient(180deg, #0d0d1a 0%, #080810 100%);
+    border-bottom: 1px solid #d4a85340;
+    padding: 24px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  header h1 {
+    font-size: 28px;
+    color: #d4a853;
+    letter-spacing: 6px;
+    font-weight: normal;
+  }
+
+  header p {
+    color: #6a6a8a;
+    font-size: 11px;
+    letter-spacing: 2px;
+    margin-top: 4px;
+  }
+
+  #live-bar {
+    font-size: 11px;
+    color: #6a6a8a;
+    text-align: right;
+  }
+
+  #live-bar span { color: #a0e0a0; }
+
+  /* ── Input form ── */
+  #input-section {
+    max-width: 700px;
+    margin: 48px auto;
+    padding: 0 20px;
+  }
+
+  .form-card {
+    background: #0d0d1e;
+    border: 1px solid #d4a85340;
+    border-radius: 12px;
+    padding: 36px;
+  }
+
+  .form-card h2 {
+    color: #d4a853;
+    font-size: 14px;
+    letter-spacing: 3px;
+    font-weight: normal;
+    margin-bottom: 28px;
+    text-align: center;
+  }
+
+  .form-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .form-group label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #8080a0;
+    text-transform: uppercase;
+  }
+
+  .form-group input {
+    background: #080810;
+    border: 1px solid #30305a;
+    border-radius: 6px;
+    padding: 12px 14px;
+    color: #e0e0f0;
+    font-size: 15px;
+    font-family: 'Georgia', serif;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .form-group input:focus { border-color: #d4a853; }
+
+  #calculate-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #1a1a3e, #2a1a4e);
+    border: 1px solid #d4a853;
+    border-radius: 8px;
+    color: #d4a853;
+    font-size: 13px;
+    letter-spacing: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 8px;
+    font-family: 'Georgia', serif;
+  }
+
+  #calculate-btn:hover {
+    background: linear-gradient(135deg, #2a2a5e, #3a2a6e);
+    box-shadow: 0 0 20px #d4a85330;
+  }
+
+  /* ── Results ── */
+  #results {
+    max-width: 1200px;
+    margin: 0 auto 60px;
+    padding: 0 20px;
+    display: none;
+  }
+
+  .results-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .results-grid-2 {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .card {
+    background: #0d0d1e;
+    border: 1px solid #20204a;
+    border-radius: 10px;
+    padding: 24px;
+  }
+
+  .card-title {
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: #6a6a8a;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #20204a;
+  }
+
+  /* Sun card */
+  .sign-big {
+    font-size: 48px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .sign-name {
+    font-size: 22px;
+    color: #d4a853;
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+  }
+
+  .sign-meta {
+    font-size: 11px;
+    color: #6a6a8a;
+    line-height: 1.8;
+  }
+
+  .sign-meta span { color: #a0a0c0; }
+
+  /* Moon card */
+  #moon-canvas {
+    display: block;
+    margin: 0 auto 12px;
+  }
+
+  .moon-name {
+    text-align: center;
+    font-size: 16px;
+    color: #c8c8e8;
+    margin-bottom: 6px;
+  }
+
+  .moon-meta {
+    font-size: 11px;
+    color: #6a6a8a;
+    text-align: center;
+    line-height: 1.9;
+  }
+
+  .moon-meta span { color: #a0a0c0; }
+
+  /* Pineal card */
+  .pineal-score {
+    font-size: 52px;
+    color: #d4a853;
+    text-align: center;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .pineal-denom {
+    text-align: center;
+    font-size: 12px;
+    color: #6a6a8a;
+    margin-bottom: 14px;
+  }
+
+  .progress-bar {
+    height: 6px;
+    background: #20204a;
+    border-radius: 3px;
+    margin-bottom: 14px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 1s ease;
+    background: linear-gradient(90deg, #4a2d8e, #d4a853);
+  }
+
+  .pineal-interp {
+    font-size: 11px;
+    color: #a0a0c0;
+    text-align: center;
+    line-height: 1.6;
+    margin-bottom: 14px;
+  }
+
+  .component-bars { display: flex; flex-direction: column; gap: 6px; }
+
+  .comp-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    color: #6a6a8a;
+  }
+
+  .comp-label { width: 50px; }
+
+  .comp-bar {
+    flex: 1;
+    height: 4px;
+    background: #20204a;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .comp-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 1s ease;
+  }
+
+  .comp-val { width: 30px; text-align: right; color: #a0a0c0; }
+
+  /* Orrery */
+  #orrery-canvas {
+    display: block;
+    margin: 0 auto;
+  }
+
+  /* Solar cycle */
+  #solar-canvas {
+    display: block;
+    margin: 0 auto 16px;
+  }
+
+  .solar-meta {
+    font-size: 11px;
+    color: #6a6a8a;
+    line-height: 2;
+  }
+
+  .solar-meta span { color: #d4a853; }
+
+  /* Ephemeris table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+  }
+
+  th {
+    color: #6a6a8a;
+    font-weight: normal;
+    text-align: left;
+    letter-spacing: 1px;
+    padding: 6px 8px;
+    border-bottom: 1px solid #20204a;
+    font-size: 10px;
+  }
+
+  td {
+    padding: 7px 8px;
+    border-bottom: 1px solid #14142a;
+    color: #a0a0c0;
+    font-family: 'Courier New', monospace;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #14142a; }
+
+  .planet-sym { font-size: 14px; }
+
+  /* Vivaxis */
+  .vivaxis-dates {
+    font-size: 13px;
+    color: #a0a0c0;
+    line-height: 2.2;
+  }
+
+  .vivaxis-active {
+    color: #a0e0a0;
+    font-size: 12px;
+    margin-top: 8px;
+  }
+
+  .vivaxis-closed {
+    color: #6a6a8a;
+    font-size: 11px;
+    margin-top: 8px;
+  }
+
+  .vivaxis-desc {
+    font-size: 10px;
+    color: #50507a;
+    line-height: 1.7;
+    margin-top: 14px;
+    border-top: 1px solid #20204a;
+    padding-top: 12px;
+  }
+
+  /* Loading */
+  #loading {
+    text-align: center;
+    padding: 40px;
+    color: #6a6a8a;
+    display: none;
+    font-size: 13px;
+    letter-spacing: 3px;
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 20px; height: 20px;
+    border: 2px solid #30305a;
+    border-top-color: #d4a853;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-right: 12px;
+    vertical-align: middle;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .band-elevated { color: #e8a030; }
+  .band-moderate { color: #a0c0e0; }
+  .band-quiet    { color: #80a080; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>HELIOPRINT</h1>
+    <p>COSMIC CHRONOBIOLOGY · MAGNETOBIOLOGICAL BIRTH ANALYSIS</p>
+  </div>
+  <div id="live-bar">
+    LIVE CONDITIONS<br>
+    Kp <span id="live-kp">—</span> · Solar Wind <span id="live-wind">—</span>
+  </div>
+</header>
+
+<div id="input-section">
+  <div class="form-card">
+    <h2>ENTER BIRTH DATE</h2>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Year</label>
+        <input type="number" id="year" placeholder="1985" min="1755" max="2100">
+      </div>
+      <div class="form-group">
+        <label>Month</label>
+        <input type="number" id="month" placeholder="3" min="1" max="12">
+      </div>
+      <div class="form-group">
+        <label>Day</label>
+        <input type="number" id="day" placeholder="15" min="1" max="31">
+      </div>
+      <div class="form-group">
+        <label>Hour UTC (0–23)</label>
+        <input type="number" id="hour" placeholder="12" min="0" max="23">
+      </div>
+    </div>
+    <button id="calculate-btn" onclick="calculate()">
+      CALCULATE BIRTH SIGNATURE
+    </button>
+  </div>
+</div>
+
+<div id="loading">
+  <span class="spinner"></span>CALCULATING PLANETARY POSITIONS...
+</div>
+
+<div id="results">
+
+  <!-- Row 1: Sun · Moon · Pineal -->
+  <div class="results-grid">
+
+    <div class="card" id="sun-card">
+      <div class="card-title">☀ SUN SIGN</div>
+      <div class="sign-big" id="sun-symbol"></div>
+      <div class="sign-name" id="sun-name"></div>
+      <div class="sign-meta" id="sun-meta"></div>
+    </div>
+
+    <div class="card" id="moon-card">
+      <div class="card-title">◑ LUNAR PHASE</div>
+      <canvas id="moon-canvas" width="80" height="80"></canvas>
+      <div class="moon-name" id="moon-name"></div>
+      <div class="moon-meta" id="moon-meta"></div>
+    </div>
+
+    <div class="card" id="pineal-card">
+      <div class="card-title">◈ PINEAL INDEX</div>
+      <div class="pineal-score" id="pineal-score"></div>
+      <div class="pineal-denom">/ 100</div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="pineal-bar"></div>
+      </div>
+      <div class="pineal-interp" id="pineal-interp"></div>
+      <div class="component-bars" id="component-bars"></div>
+    </div>
+
+  </div>
+
+  <!-- Row 2: Orrery + Solar -->
+  <div class="results-grid-2">
+
+    <div class="card">
+      <div class="card-title">⊙ HELIOCENTRIC MAP</div>
+      <canvas id="orrery-canvas" width="500" height="380"></canvas>
+    </div>
+
+    <div class="card">
+      <div class="card-title">☀ SOLAR CYCLE</div>
+      <canvas id="solar-canvas" width="300" height="160"></canvas>
+      <div class="solar-meta" id="solar-meta"></div>
+    </div>
+
+  </div>
+
+  <!-- Row 3: Ephemeris + Vivaxis -->
+  <div class="results-grid-2">
+
+    <div class="card">
+      <div class="card-title">⊛ PLANETARY EPHEMERIS</div>
+      <table id="ephemeris-table">
+        <thead>
+          <tr>
+            <th>BODY</th>
+            <th>LONGITUDE</th>
+            <th>SIGN</th>
+            <th>DIST (AU)</th>
+            <th>FIELD @ EARTH</th>
+          </tr>
+        </thead>
+        <tbody id="ephemeris-body"></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title">◎ VIVAXIS WINDOW</div>
+      <div class="vivaxis-dates" id="vivaxis-dates"></div>
+      <div id="vivaxis-status"></div>
+      <div class="vivaxis-desc">
+        The Vivaxis hypothesis proposes that a magnetic bridging field
+        forms at birth — the infant's first unshielded exposure to the
+        full planetary electromagnetic environment. This field typically
+        dissolves within 90 days. Birth trauma may fix it permanently,
+        encoding the geomagnetic vector of emergence as a lifetime
+        directional reference.
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+// ── Live conditions on load ───────────────────────────────────────────────
+async function loadLive() {
+  try {
+    const r = await fetch('/calculate', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({year:2000,month:1,day:1,hour:12})
+    });
+    const d = await r.json();
+    if (d.live.kp_status === 'live') {
+      document.getElementById('live-kp').textContent   = d.live.kp + ' ' + d.live.kp_label;
+      document.getElementById('live-wind').textContent = d.live.wind ? d.live.wind.toFixed(0) + ' km/s' : '—';
+    }
+  } catch(e) {}
+}
+
+// ── Main calculate ────────────────────────────────────────────────────────
+async function calculate() {
+  const year  = parseInt(document.getElementById('year').value);
+  const month = parseInt(document.getElementById('month').value);
+  const day   = parseInt(document.getElementById('day').value);
+  const hour  = parseFloat(document.getElementById('hour').value || 12);
+
+  if (!year || !month || !day) { alert('Please enter year, month, and day.'); return; }
+
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('results').style.display = 'none';
+
+  const r    = await fetch('/calculate', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({year, month, day, hour})
+  });
+  const d = await r.json();
+
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('results').style.display = 'block';
+
+  renderSun(d.sun);
+  renderMoon(d.moon);
+  renderPineal(d.pineal);
+  renderOrrery(d.planets);
+  renderSolar(d.solar);
+  renderEphemeris(d.planets);
+  renderVivaxis(d.vivaxis);
+  updateLive(d.live);
+}
+
+// ── Sun ───────────────────────────────────────────────────────────────────
+function renderSun(sun) {
+  document.getElementById('sun-symbol').textContent = sun.symbol;
+  document.getElementById('sun-name').textContent   = sun.sign.toUpperCase();
+  document.getElementById('sun-meta').innerHTML =
+    `<span>${sun.longitude}°</span>  ·  ${sun.degree.toFixed(1)}° ${sun.sign}<br>
+     Element: <span>${sun.element}</span><br>
+     Modality: <span>${sun.modality}</span><br>
+     Ruler: <span>${sun.ruler}</span>`;
+}
+
+// ── Moon ──────────────────────────────────────────────────────────────────
+function renderMoon(moon) {
+  document.getElementById('moon-name').textContent = moon.phase_symbol + '  ' + moon.phase_name;
+  document.getElementById('moon-meta').innerHTML =
+    `Moon in <span>${moon.moon_sign_symbol} ${moon.moon_sign}</span><br>
+     Age: <span>${moon.age_days} days</span>  ·  Illum: <span>${moon.illumination}%</span><br>
+     Tidal Index: <span>${moon.tidal_index}</span><br>
+     Magnetic Coupling: <span>${moon.magnetic_coupling}</span>`;
+
+  const cv = document.getElementById('moon-canvas');
+  const ctx = cv.getContext('2d');
+  const cx = 40, cy = 40, r = 30;
+  ctx.clearRect(0, 0, 80, 80);
+
+  const pa  = moon.phase_angle;
+  const ill = moon.illumination / 100;
+
+  // Dark side
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fillStyle = '#2a2a3a';
+  ctx.fill();
+
+  // Light side
+  if (ill > 0.02 && ill < 0.98) {
+    const wax = pa < 180;
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, -Math.PI/2, Math.PI/2, wax);
+    ctx.closePath();
+    ctx.clip();
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI*2);
+    ctx.fillStyle = '#e8e0b0';
+    ctx.fill();
+    // Terminator ellipse
+    const k = Math.abs(Math.cos(pa * Math.PI / 180));
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, r * k + 1, r, 0, 0, Math.PI*2);
+    ctx.fillStyle = wax ? '#2a2a3a' : '#e8e0b0';
+    ctx.fill();
+    ctx.restore();
+  } else if (ill >= 0.98) {
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI*2);
+    ctx.fillStyle = '#e8e0b0';
+    ctx.fill();
+  }
+
+  // Rim
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI*2);
+  ctx.strokeStyle = '#50506a';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+}
+
+// ── Pineal ────────────────────────────────────────────────────────────────
+function renderPineal(pi) {
+  const el = document.getElementById('pineal-score');
+  el.textContent = pi.score;
+  el.className = 'pineal-score band-' + pi.band.toLowerCase();
+
+  document.getElementById('pineal-bar').style.width = pi.score + '%';
+  document.getElementById('pineal-interp').textContent = pi.interpretation;
+
+  const comps = [
+    {label:'Solar', val:pi.solar, max:35, color:'#e8a030'},
+    {label:'Lunar', val:pi.lunar, max:25, color:'#8090c0'},
+    {label:'Giants',val:pi.giants,max:40, color:'#a060d0'},
+  ];
+  const cb = document.getElementById('component-bars');
+  cb.innerHTML = comps.map(c => `
+    <div class="comp-row">
+      <div class="comp-label">${c.label}</div>
+      <div class="comp-bar">
+        <div class="comp-fill" style="width:${Math.min(100,(c.val/c.max)*100)}%;background:${c.color}"></div>
+      </div>
+      <div class="comp-val">${c.val}</div>
+    </div>`).join('');
+}
+
+// ── Orrery ────────────────────────────────────────────────────────────────
+function renderOrrery(planets) {
+  const cv  = document.getElementById('orrery-canvas');
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  const cx = W/2, cy = H/2;
+  const scale = 11.5;
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#06060f';
+  ctx.fillRect(0, 0, W, H);
+
+  // Stars
+  const rng = (s) => { let x=s; x=((x>>16)^x)*0x45d9f3b; x=((x>>16)^x)*0x45d9f3b; return (x>>16)^x; };
+  for (let i = 0; i < 120; i++) {
+    const sx = (Math.abs(rng(i*7+1)) % W);
+    const sy = (Math.abs(rng(i*7+2)) % H);
+    const sa = 0.2 + (Math.abs(rng(i*7+3)) % 60) / 100;
+    ctx.beginPath();
+    ctx.arc(sx, sy, 0.7, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(200,200,255,${sa})`;
+    ctx.fill();
+  }
+
+  // Orbit rings
+  const orbits = {Mercury:0.387,Venus:0.723,Earth:1,Mars:1.524,Jupiter:5.203,Saturn:9.537,Uranus:19.19,Neptune:30.07};
+  for (const [name, a] of Object.entries(orbits)) {
+    ctx.beginPath();
+    ctx.arc(cx, cy, a * scale, 0, Math.PI*2);
+    ctx.strokeStyle = name === 'Earth' ? 'rgba(79,163,224,0.25)' : 'rgba(255,255,255,0.05)';
+    ctx.lineWidth = name === 'Earth' ? 1 : 0.5;
+    ctx.stroke();
+  }
+
+  // Sun
+  const sunGrad = ctx.createRadialGradient(cx,cy,0,cx,cy,12);
+  sunGrad.addColorStop(0, '#ffffa0');
+  sunGrad.addColorStop(0.4, '#ffd060');
+  sunGrad.addColorStop(1, '#ff800020');
+  ctx.beginPath();
+  ctx.arc(cx, cy, 12, 0, Math.PI*2);
+  ctx.fillStyle = sunGrad;
+  ctx.fill();
+
+  // Planets
+  const sizes = {Mercury:2.5,Venus:3,Earth:4,Mars:3,Jupiter:7,Saturn:6,Uranus:4.5,Neptune:4};
+  for (const p of planets) {
+    const px = cx + p.x * scale;
+    const py = cy - p.y * scale;
+    const pr = sizes[p.name] || 3;
+
+    ctx.beginPath();
+    ctx.arc(px, py, pr, 0, Math.PI*2);
+    ctx.fillStyle = p.color;
+    ctx.fill();
+
+    ctx.font = '10px Georgia';
+    ctx.fillStyle = p.color;
+    ctx.fillText(p.symbol, px + pr + 2, py + 4);
+  }
+}
+
+// ── Solar cycle ───────────────────────────────────────────────────────────
+function renderSolar(sol) {
+  const cv  = document.getElementById('solar-canvas');
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  const pad = 24;
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#06060f';
+  ctx.fillRect(0, 0, W, H);
+
+  const pts = [];
+  for (let i = 0; i <= 100; i++) {
+    const t = i / 100;
+    const env = t < 0.4
+      ? Math.pow(t/0.4, 1.5)
+      : Math.pow(1-(t-0.4)/0.6, 0.8);
+    pts.push([pad + t*(W-2*pad), H-pad - env*(H-2*pad)]);
+  }
+
+  // Fill
+  ctx.beginPath();
+  ctx.moveTo(pad, H-pad);
+  pts.forEach(p => ctx.lineTo(p[0], p[1]));
+  ctx.lineTo(W-pad, H-pad);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(212,168,83,0.12)';
+  ctx.fill();
+
+  // Line
+  ctx.beginPath();
+  ctx.moveTo(pts[0][0], pts[0][1]);
+  pts.slice(1).forEach(p => ctx.lineTo(p[0], p[1]));
+  ctx.strokeStyle = '#d4a853';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // Birth marker
+  const bx = pad + (sol.phase_pct/100) * (W-2*pad);
+  ctx.setLineDash([4, 3]);
+  ctx.beginPath();
+  ctx.moveTo(bx, pad);
+  ctx.lineTo(bx, H-pad);
+  ctx.strokeStyle = '#4fa3e0';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Labels
+  ctx.font = '9px Courier New';
+  ctx.fillStyle = '#50507a';
+  ctx.fillText('MIN', pad, H-8);
+  ctx.fillText('MAX', W/2 - 10, H-8);
+  ctx.fillText('MIN', W-pad-16, H-8);
+
+  document.getElementById('solar-meta').innerHTML =
+    `Cycle: <span>${sol.cycle_number}</span>  ·  ${sol.phase_label}<br>
+     Phase: <span>${sol.phase_pct}%</span> through cycle<br>
+     Est. SSN: <span>${sol.est_ssn}</span>  ·  Kp proxy: <span>${sol.kp_proxy}</span>`;
+}
+
+// ── Ephemeris ─────────────────────────────────────────────────────────────
+function renderEphemeris(planets) {
+  const SIGNS = ['Aries','Tau','Gem','Can','Leo','Vir','Lib','Sco','Sag','Cap','Aqu','Pis'];
+  const SYMS  = ['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
+
+  const tbody = document.getElementById('ephemeris-body');
+  tbody.innerHTML = planets.map(p => {
+    const si   = Math.floor(p.longitude / 30) % 12;
+    const dist  = p.dist  != null ? p.dist.toFixed(3)  : '—';
+    const field = p.field != null ? p.field.toExponential(2) : '— (origin)';
+    return `<tr>
+      <td><span class="planet-sym" style="color:${p.color}">${p.symbol}</span>  ${p.name}</td>
+      <td>${p.longitude.toFixed(2)}°</td>
+      <td>${SYMS[si]} ${SIGNS[si]}</td>
+      <td>${dist}</td>
+      <td>${field}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── Vivaxis ───────────────────────────────────────────────────────────────
+function renderVivaxis(viv) {
+  document.getElementById('vivaxis-dates').innerHTML =
+    `Birth: <b>${viv.birth_date}</b><br>Window closes: <b>${viv.window_end}</b>`;
+
+  const st = document.getElementById('vivaxis-status');
+  if (viv.active) {
+    st.innerHTML = `<div class="vivaxis-active">⚡ WINDOW STILL OPEN — ${viv.remaining} days remaining</div>`;
+  } else {
+    st.innerHTML = `<div class="vivaxis-closed">Window closed ${viv.elapsed} days after birth (${Math.floor(viv.elapsed/365.25)} years ago)</div>`;
+  }
+}
+
+// ── Live bar ──────────────────────────────────────────────────────────────
+function updateLive(live) {
+  if (live.kp_status === 'live') {
+    document.getElementById('live-kp').textContent   = live.kp + ' ' + live.kp_label;
+    document.getElementById('live-wind').textContent = live.wind ? live.wind.toFixed(0) + ' km/s' : '—';
+  }
+}
+
+// Load live conditions on page load
+loadLive();
+</script>
+</body>
+</html>

@@ -94,6 +94,7 @@ def calculate():
             'solar':          pi['solar'],
             'lunar':          pi['lunar'],
             'giants':         pi['giants'],
+            'inner':          pi['inner'],
         },
         'vivaxis': {
             'birth_date': viv['birth_date'],

@@ -516,9 +516,10 @@ function renderPineal(pi) {
   document.getElementById('pineal-interp').textContent = pi.interpretation;
 
   const comps = [
-    {label:'Solar',  val:pi.solar,  max:35, color:'#e8a030'},
-    {label:'Lunar',  val:pi.lunar,  max:25, color:'#8090c0'},
-    {label:'Giants', val:pi.giants, max:40, color:'#a060d0'},
+    {label:'Solar',  val:pi.solar,  max:35,  color:'#e8a030'},
+    {label:'Lunar',  val:pi.lunar,  max:25,  color:'#8090c0'},
+    {label:'Giants', val:pi.giants, max:40,  color:'#a060d0'},
+    {label:'Inner',  val:pi.inner,  max:2.5, color:'#a0d0a0'},
   ];
   document.getElementById('component-bars').innerHTML = comps.map(c => `
     <div class="comp-row">
